@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-main: #f3f6fb;
+}
+
+body {
+  background: radial-gradient(circle at top right, #e2ecff 0%, #f8fbff 45%, #f3f6fb 100%);
+  color: #0f172a;
+  min-height: 100vh;
+}
+
+input[type="file"] {
+  font-size: 0.875rem;
+}

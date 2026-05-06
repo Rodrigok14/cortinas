@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-primary: #3d7a4a;
+  --brand-accent: #ff9a5a;
+  --brand-soft: #f5f0e6;
+  --ink-1: #102018;
+}
+
+* {
+  border-color: #e2e8f0;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--ink-1);
+  background:
+    radial-gradient(1000px 620px at -8% -8%, #e2f3df, transparent 62%),
+    radial-gradient(900px 520px at 110% -2%, #ffe9d8, transparent 57%),
+    radial-gradient(800px 420px at 52% 118%, #e8f3ff, transparent 60%),
+    linear-gradient(180deg, #fffefc 0%, #f7f8f4 100%);
+}
+
+input[type="file"] {
+  font-size: 0.875rem;
+}
+
+.status-pill {
+  @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize;
+}
+
+.btn-vivid {
+  @apply rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 text-white shadow-[0_10px_24px_rgba(21,128,61,0.25)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(21,128,61,0.3)];
+}
+
+.btn-warm {
+  @apply rounded-xl bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-white shadow-[0_10px_24px_rgba(249,115,22,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(249,115,22,0.35)];
+}

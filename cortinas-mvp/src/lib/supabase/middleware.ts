@@ -1,15 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest, NextResponse } from "next/server";
+import { getEnvOrNull } from "@/lib/env";
 
 export function updateSession(request: NextRequest, response: NextResponse) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const env = getEnvOrNull();
 
-  if (!url || !anonKey) {
+  if (!env) {
     return response;
   }
 
-  const supabase = createServerClient(url, anonKey, {
+  const supabase = createServerClient(env.url, env.anonKey, {
     cookies: {
       get(name) {
         return request.cookies.get(name)?.value;

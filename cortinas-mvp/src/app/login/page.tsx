@@ -6,12 +6,23 @@ import { LoginForm } from "@/modules/auth/login-form";
 type Props = { searchParams?: { error?: string } };
 
 export default async function LoginPage({ searchParams }: Props) {
-  const supabase = getSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let authError: string | null = null;
 
-  if (user) redirect("/dashboard");
+  try {
+    const supabase = getSupabaseServerClient();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error) {
+      authError = error.message;
+    }
+
+    if (user) redirect("/dashboard");
+  } catch (error) {
+    authError = error instanceof Error ? error.message : "No se pudo conectar con Supabase";
+  }
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
@@ -20,7 +31,7 @@ export default async function LoginPage({ searchParams }: Props) {
           <h1 className="text-2xl font-semibold">Panel Cortinas</h1>
           <p className="text-sm text-slate-600">Ingresa con tu cuenta para continuar.</p>
         </div>
-        <LoginForm error={searchParams?.error} />
+        <LoginForm error={searchParams?.error ?? authError ?? undefined} />
       </Card>
     </main>
   );

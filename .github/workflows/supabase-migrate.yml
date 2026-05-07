@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "supabase/migrations/**"
-      - "supabase/seed.sql"
+      - "cortinas-mvp/supabase/migrations/**"
+      - "cortinas-mvp/supabase/seed.sql"
       - ".github/workflows/supabase-migrate.yml"
 
 permissions:
@@ -19,6 +19,10 @@ jobs:
   migrate:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    defaults:
+      run:
+        working-directory: cortinas-mvp
 
     env:
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

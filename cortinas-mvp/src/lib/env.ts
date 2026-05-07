@@ -6,6 +6,13 @@ function firstDefined(keys: string[]): string | null {
   return null;
 }
 
+/** Evita trailing slash y URLs mal copiadas que rompen el cliente Auth. */
+export function normalizeSupabaseUrl(url: string): string {
+  let u = url.trim().replace(/\/+$/, "");
+  if (!/^https?:\/\//i.test(u)) u = `https://${u}`;
+  return u;
+}
+
 const SUPABASE_URL_KEYS = ["NEXT_PUBLIC_SUPABASE_URL", "SUPABASE_URL"];
 const SUPABASE_ANON_KEYS = [
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -15,8 +22,9 @@ const SUPABASE_ANON_KEYS = [
 const SUPABASE_SERVICE_KEYS = ["SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SECRET_KEY"];
 
 export function getEnv() {
-  const url = firstDefined(SUPABASE_URL_KEYS);
+  const rawUrl = firstDefined(SUPABASE_URL_KEYS);
   const anonKey = firstDefined(SUPABASE_ANON_KEYS);
+  const url = rawUrl ? normalizeSupabaseUrl(rawUrl) : null;
 
   if (!url || !anonKey) {
     throw new Error(
@@ -30,10 +38,10 @@ export function getEnv() {
 }
 
 export function getEnvOrNull() {
-  const url = firstDefined(SUPABASE_URL_KEYS);
+  const rawUrl = firstDefined(SUPABASE_URL_KEYS);
   const anonKey = firstDefined(SUPABASE_ANON_KEYS);
-  if (!url || !anonKey) return null;
-  return { url, anonKey };
+  if (!rawUrl || !anonKey) return null;
+  return { url: normalizeSupabaseUrl(rawUrl), anonKey };
 }
 
 export function getServiceRoleKey(): string {

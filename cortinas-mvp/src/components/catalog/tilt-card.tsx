@@ -10,6 +10,7 @@ type Props = {
   imageSrc: string;
   tags?: string[];
   className?: string;
+  whatsappPhone?: string | null;
 };
 
 function clamp(value: number, min: number, max: number) {
@@ -21,7 +22,7 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 }
 
-export function TiltCard({ title, subtitle, imageSrc, tags, className }: Props) {
+export function TiltCard({ title, subtitle, imageSrc, tags, className, whatsappPhone }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [dragging, setDragging] = useState(false);
   const [rotation, setRotation] = useState({ rx: 0, ry: 0 });
@@ -33,6 +34,16 @@ export function TiltCard({ title, subtitle, imageSrc, tags, className }: Props) 
 
   const maxTilt = useMemo(() => (dragging ? 14 : 10), [dragging]);
   const maxDrag = 18;
+
+  const waHref = useMemo(() => {
+    if (!whatsappPhone?.trim()) return null;
+    const digits = whatsappPhone.replace(/\D/g, "");
+    if (!digits) return null;
+    const text = encodeURIComponent(
+      `Hola CortinasHome! Me interesa cotizar: *${title}*. ¿Pueden darme un precio?`,
+    );
+    return `https://wa.me/${digits}?text=${text}`;
+  }, [whatsappPhone, title]);
 
   function setFromPoint(clientX: number, clientY: number) {
     if (!ref.current) return;
@@ -144,6 +155,18 @@ export function TiltCard({ title, subtitle, imageSrc, tags, className }: Props) 
               </span>
             ))}
           </div>
+        ) : null}
+
+        {waHref ? (
+          <a
+            href={waHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 py-2 text-xs font-semibold text-white shadow-sm transition hover:opacity-95"
+          >
+            Consultar por WhatsApp
+          </a>
         ) : null}
       </div>
 

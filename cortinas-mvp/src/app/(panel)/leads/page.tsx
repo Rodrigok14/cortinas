@@ -71,7 +71,7 @@ export default async function LeadsPage({ searchParams }: Props) {
                   <td className="px-2 py-2">
                     <form action={updateLeadStatusAction} className="flex items-center gap-2">
                       <input type="hidden" name="id" value={lead.id} />
-                      <Select name="estado" defaultValue={lead.estado}>
+                      <Select name="estado" defaultValue={lead.estado ?? "nuevo"}>
                         <option value="nuevo">nuevo</option>
                         <option value="contactado">contactado</option>
                         <option value="visita_programada">visita_programada</option>

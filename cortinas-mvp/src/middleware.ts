@@ -25,9 +25,9 @@ const protectedPaths = [
   "/control",
 ];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  updateSession(request, response);
+  await updateSession(request, response);
 
   const path = request.nextUrl.pathname;
   const isProtected = protectedPaths.some((item) => path === item || path.startsWith(`${item}/`));

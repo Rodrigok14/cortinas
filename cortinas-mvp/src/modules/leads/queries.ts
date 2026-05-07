@@ -1,6 +1,18 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function getLeads(search?: string) {
+export type LeadListItem = {
+  id: string;
+  nombre: string | null;
+  telefono: string | null;
+  email: string | null;
+  ciudad: string | null;
+  fuente: string | null;
+  estado: string | null;
+  prioridad: string | null;
+  created_at: string;
+};
+
+export async function getLeads(search?: string): Promise<LeadListItem[]> {
   const supabase = getSupabaseServerClient();
   let query = supabase
     .from("leads")

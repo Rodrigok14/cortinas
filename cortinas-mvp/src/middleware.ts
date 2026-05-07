@@ -16,6 +16,12 @@ const protectedPaths = [
   "/pedidos",
   "/costos",
   "/gastos",
+  "/finanzas",
+  "/proveedores",
+  "/compras",
+  "/cuentas-pagar",
+  "/sueldos",
+  "/inversores",
   "/control",
 ];
 

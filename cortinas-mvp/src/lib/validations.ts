@@ -6,7 +6,7 @@ const requiredString = (name: string) =>
 const optionalString = z.string().trim().nullable().optional();
 
 export const loginSchema = z.object({
-  email: z.string().email("Email invalido"),
+  email: requiredString("Usuario o email"),
   password: z.string().min(6, "La contrasena debe tener al menos 6 caracteres"),
 });
 
@@ -128,6 +128,18 @@ export const expenseSchema = z.object({
   categoria: requiredString("Categoria obligatoria"),
   descripcion: requiredString("Descripcion obligatoria"),
   monto: z.coerce.number().positive("Monto invalido"),
+});
+
+export const investorSchema = z.object({
+  id: z.string().uuid().optional(),
+  nombre: requiredString("Nombre obligatorio"),
+  dia_pago: z.coerce.number().int().min(1, "Dia invalido").max(31, "Dia invalido"),
+  monto_invertido: z.coerce.number().min(0, "Monto invertido invalido"),
+  porcentaje_inversion: z.coerce.number().min(0, "Porcentaje invalido").max(100, "Porcentaje invalido"),
+  monto_neto: z.coerce.number().min(0, "Monto neto invalido"),
+  fecha_a_pagar: requiredString("Fecha a pagar obligatoria"),
+  estado: z.enum(["pendiente", "pagado", "vencido"]),
+  observaciones: optionalString,
 });
 
 export type ActionState = {

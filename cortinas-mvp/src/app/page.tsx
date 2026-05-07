@@ -1,102 +1,78 @@
-import Link from "next/link";
+import { Navbar } from "@/components/layout/navbar";
+import { SmoothScrollProvider } from "@/components/landing/smooth-scroll-provider";
+import { PremiumHero } from "@/components/landing/premium-hero";
+import { CurtainStudioSection } from "@/components/landing/curtain-studio-section";
+import { FeaturesSection } from "@/components/landing/features-section";
+import { TypesSection } from "@/components/landing/types-section";
+import { ProcessSection } from "@/components/landing/process-section";
 import { CatalogGrid } from "@/components/catalog/catalog-grid";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { CtaBanner } from "@/components/landing/cta-banner";
+import { FooterSection } from "@/components/landing/footer-section";
 import { catalogItems } from "@/modules/catalog/items";
-import { WhatsAppButton } from "@/components/common/whatsapp-button";
+import { getPublicWhatsAppDigits } from "@/lib/whatsapp-public";
 
-export default async function Home() {
-  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? null;
-  const whatsappMessage =
-    "Hola! Vi el catálogo en la web y quiero consultar por telas/cortinas. ¿Me ayudás con una cotización?";
+export default function Home() {
+  const whatsappPhone = getPublicWhatsAppDigits();
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:pt-14">
-      <header className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-        <div className="max-w-2xl space-y-3">
-          <p className="inline-flex w-fit items-center gap-2 rounded-full border border-white/40 bg-white/45 px-3 py-1 text-xs font-semibold text-slate-700 backdrop-blur">
-            Cortinas a medida · Catálogo demo
-          </p>
-          <h1 className="text-balance text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-            Elegí tu tela y estilo. Nosotros lo hacemos realidad.
-          </h1>
-          <p className="text-pretty text-sm leading-relaxed text-slate-700 sm:text-base">
-            Explorá telas y cortinas con un efecto 3D moderno: pasá el mouse para inclinar, o
-            arrastrá para “girar” la tarjeta. Luego cotizamos y coordinamos la visita.
-          </p>
+    <SmoothScrollProvider>
+      {/* Fixed Navbar */}
+      <Navbar />
 
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Link href="/login" className="btn-vivid px-4 py-2 text-sm font-semibold">
-              Entrar al panel
-            </Link>
-            <div className="btn-warm px-4 py-2 text-sm font-semibold">
-              <WhatsAppButton phone={whatsappPhone} message={whatsappMessage} />
+      <main>
+        {/* 1. Hero — before/after cinematográfico + WebGL */}
+        <PremiumHero />
+
+        {/* 2. Estudio — visualizador, telas, luz, día/noche */}
+        <CurtainStudioSection />
+
+        {/* 3. Beneficios — por qué elegirnos */}
+        <FeaturesSection />
+
+        {/* 4. Tipos de cortinas — visual e inspiracional */}
+        <TypesSection />
+
+        {/* 5. Proceso — reduce la fricción de compra */}
+        <ProcessSection />
+
+        {/* 6. Catálogo — con filtros y CTA por producto */}
+        <section id="catalogo" className="section-padding">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            {/* Section header */}
+            <div className="mb-10 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <span className="mb-2 inline-block rounded-full border border-[rgba(26,92,58,0.2)] bg-[rgba(26,92,58,0.06)] px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#1a5c3a]">
+                  Catálogo
+                </span>
+                <h2
+                  className="text-3xl sm:text-4xl font-bold text-[#0f2419]"
+                  style={{ fontFamily: "var(--font-cormorant), Georgia, serif" }}
+                >
+                  Explorá nuestros modelos
+                </h2>
+                <p className="mt-1.5 text-sm text-[#6b5e52]">
+                  Pasá el cursor sobre cada tarjeta para ver el efecto 3D.
+                </p>
+              </div>
+              <p className="text-xs text-[#6b5e52] opacity-70 shrink-0">
+                {catalogItems.length} modelos disponibles
+              </p>
             </div>
-            <a
-              href="#catalogo"
-              className="rounded-xl border border-white/50 bg-white/50 px-4 py-2 text-sm font-semibold text-slate-800 backdrop-blur transition hover:bg-white/70"
-            >
-              Ver catálogo
-            </a>
-          </div>
-        </div>
 
-        <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/40 bg-white/45 p-4 shadow-[0_22px_80px_rgba(15,23,42,0.10)] backdrop-blur">
-          <div className="absolute -left-24 -top-24 h-64 w-64 rounded-full bg-emerald-300/30 blur-3xl" />
-          <div className="absolute -bottom-28 -right-24 h-64 w-64 rounded-full bg-orange-300/30 blur-3xl" />
-          <div className="relative space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-              Cómo usar el efecto 3D
-            </p>
-            <ul className="space-y-1 text-sm text-slate-700">
-              <li>
-                <span className="font-semibold text-slate-900">Hover</span>: inclinación suave con
-                luz y profundidad.
-              </li>
-              <li>
-                <span className="font-semibold text-slate-900">Drag</span>: mantené apretado y
-                mové para girar.
-              </li>
-              <li>
-                <span className="font-semibold text-slate-900">Mobile</span>: tocá y arrastrá.
-              </li>
-            </ul>
+            <CatalogGrid items={catalogItems} whatsappPhone={whatsappPhone} />
           </div>
-        </div>
-      </header>
+        </section>
 
-      <section id="catalogo" className="mt-10 space-y-4 sm:mt-14">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-950">Catálogo</h2>
-            <p className="text-sm text-slate-600">
-              12 modelos demo (placeholders). Próximo paso: reemplazar por fotos reales.
-            </p>
-          </div>
-          <p className="text-xs font-semibold text-slate-500">
-            Tip: si te marea, activá “reducir movimiento” en el sistema.
-          </p>
-        </div>
+        {/* 7. Testimonios */}
+        <TestimonialsSection />
 
-        <CatalogGrid items={catalogItems} />
-      </section>
+        {/* 8. CTA final — máxima conversión */}
+        <CtaBanner />
+      </main>
 
-      <footer className="mt-14 rounded-2xl border border-white/40 bg-white/45 p-5 backdrop-blur">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-semibold text-slate-900">¿Querés una cotización rápida?</p>
-            <p className="text-sm text-slate-600">
-              Entrá al panel (admin) o escribinos por WhatsApp.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Link href="/login" className="btn-vivid px-4 py-2 text-sm font-semibold">
-              Panel / Admin
-            </Link>
-            <div className="btn-warm px-4 py-2 text-sm font-semibold">
-              <WhatsAppButton phone={whatsappPhone} message={whatsappMessage} />
-            </div>
-          </div>
-        </div>
-      </footer>
-    </main>
+      {/* Footer */}
+      <FooterSection />
+    </SmoothScrollProvider>
   );
 }

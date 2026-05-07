@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { money } from "@/lib/utils";
 import { createBudgetAction } from "@/modules/cotizador/actions";
 import { BRAND } from "@/lib/branding";
+import { getPublicWhatsAppDigits } from "@/lib/whatsapp-public";
 
 type QuoteSection = "genero" | "roller" | "bandas";
 type MultiRow = {
@@ -472,37 +473,35 @@ export function CotizadorApp() {
     return doc;
   }
 
-  async function sendBudgetToClient() {
-    const cleanPhone = common.telefono.replace(/[^\d]/g, "");
+  async function sendBudgetToBusinessWhatsApp() {
+    const businessPhone = getPublicWhatsAppDigits();
     const fileName = `${BRAND.name}-presupuesto.pdf`;
-    const message = `Hola ${common.cliente || ""}, te enviamos el presupuesto de ${BRAND.name}. Total: ${money(finalTotal)}.`;
-
-    if (!cleanPhone) {
-      alert("Falta telefono del cliente para abrir WhatsApp.");
+    if (!businessPhone) {
+      alert(
+        "Configurá NEXT_PUBLIC_WHATSAPP_PHONE con el WhatsApp del negocio (en .env local y en Vercel) para usar esta acción.",
+      );
       return;
     }
 
+    const lines = [
+      `Hola ${BRAND.name},`,
+      `Les comparto un presupuesto generado desde el cotizador del panel.`,
+      ``,
+      common.cliente && `Cliente: ${common.cliente}`,
+      common.telefono && `Tel. cliente: ${common.telefono}`,
+      common.direccion && `Dirección: ${common.direccion}`,
+      common.ambiente && `Ambiente: ${common.ambiente}`,
+      `Total estimado: ${money(finalTotal)}`,
+      common.observaciones && `Observaciones: ${common.observaciones}`,
+      ``,
+      `Detalle:`,
+      currentDetail,
+    ].filter((line) => Boolean(line)) as string[];
+    const message = lines.join("\n");
+
     const doc = await buildBudgetPdfDoc();
-    const blob = doc.output("blob");
-    const file = new File([blob], fileName, { type: "application/pdf" });
-
-    // Best-effort: mobile browsers with Web Share API can adjuntar archivo directo.
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          title: `${BRAND.name} - Presupuesto`,
-          text: message,
-          files: [file],
-        });
-        return;
-      } catch {
-        // fallback below
-      }
-    }
-
-    // Desktop fallback: download PDF and open WhatsApp chat.
     doc.save(fileName);
-    const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+    const url = `https://wa.me/${businessPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
@@ -903,10 +902,10 @@ export function CotizadorApp() {
           </button>
           <button
             type="button"
-            onClick={sendBudgetToClient}
+            onClick={sendBudgetToBusinessWhatsApp}
             className="btn-vivid px-4 py-2.5 text-sm font-semibold"
           >
-            Ir al WhatsApp del cliente
+            Enviar presupuesto por WhatsApp
           </button>
         </form>
       </Card>

@@ -23,6 +23,8 @@ export const ROLE_PERMISSIONS: Record<Role, string[]> = {
     "compras",
     "cuentas-pagar",
     "sueldos",
+    "leads",
+    "tareas",
     "inversores",
     "control",
   ],
@@ -33,6 +35,8 @@ export const ROLE_PERMISSIONS: Record<Role, string[]> = {
 
 export const NAV_ITEMS = [
   { href: "/dashboard", key: "dashboard", label: "Dashboard" },
+  { href: "/leads", key: "leads", label: "Leads" },
+  { href: "/tareas", key: "tareas", label: "Tareas" },
   { href: "/clientes", key: "clientes", label: "Clientes" },
   { href: "/pedidos", key: "pedidos", label: "Pedidos" },
   { href: "/pagos", key: "pagos", label: "Pagos" },

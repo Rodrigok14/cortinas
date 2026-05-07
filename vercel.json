@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "cd cortinas-mvp && npm ci",
+  "buildCommand": "cd cortinas-mvp && npm run build"
+}

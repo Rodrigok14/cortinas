@@ -1,0 +1,26 @@
+# Opcional: forzar un deploy en Vercel aunque falle el webhook de Git.
+# 1) Vercel → tu proyecto → Settings → Git → Deploy Hooks → crear hook (rama main).
+# 2) GitHub → repo → Settings → Secrets → New: VERCEL_DEPLOY_HOOK_URL = URL del hook.
+# Si el secreto no existe, este job no hace nada (no rompe el CI).
+
+name: Vercel deploy hook
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar deploy en Vercel
+        env:
+          HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK_URL" ]; then
+            echo "Sin VERCEL_DEPLOY_HOOK_URL: omitido. Configurá el hook en Vercel y el secret en GitHub si querés redeploy automático."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK_URL"
+          echo "Deploy hook enviado."

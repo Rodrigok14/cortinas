@@ -1,0 +1,6 @@
+{
+  "name": "cortinas-monorepo",
+  "private": true,
+  "description": "Meta-paquete raíz: la app Next.js está en cortinas-mvp/. Vercel debe usar este repo con install/build de vercel.json o Root Directory = cortinas-mvp.",
+  "version": "0.0.0"
+}

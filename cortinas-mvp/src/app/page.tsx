@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { CatalogGrid } from "@/components/catalog/catalog-grid";
 import { catalogItems } from "@/modules/catalog/items";
+import { WhatsAppButton } from "@/components/common/whatsapp-button";
 
 export default async function Home() {
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? null;
+  const whatsappMessage =
+    "Hola! Vi el catálogo en la web y quiero consultar por telas/cortinas. ¿Me ayudás con una cotización?";
+
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:pt-14">
       <header className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -22,14 +27,9 @@ export default async function Home() {
             <Link href="/login" className="btn-vivid px-4 py-2 text-sm font-semibold">
               Entrar al panel
             </Link>
-            <Link
-              href="https://wa.me/"
-              className="btn-warm px-4 py-2 text-sm font-semibold"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Consultar por WhatsApp
-            </Link>
+            <div className="btn-warm px-4 py-2 text-sm font-semibold">
+              <WhatsAppButton phone={whatsappPhone} message={whatsappMessage} />
+            </div>
             <a
               href="#catalogo"
               className="rounded-xl border border-white/50 bg-white/50 px-4 py-2 text-sm font-semibold text-slate-800 backdrop-blur transition hover:bg-white/70"
@@ -91,14 +91,9 @@ export default async function Home() {
             <Link href="/login" className="btn-vivid px-4 py-2 text-sm font-semibold">
               Panel / Admin
             </Link>
-            <Link
-              href="https://wa.me/"
-              className="btn-warm px-4 py-2 text-sm font-semibold"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              WhatsApp
-            </Link>
+            <div className="btn-warm px-4 py-2 text-sm font-semibold">
+              <WhatsAppButton phone={whatsappPhone} message={whatsappMessage} />
+            </div>
           </div>
         </div>
       </footer>

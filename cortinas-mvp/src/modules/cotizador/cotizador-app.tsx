@@ -365,6 +365,15 @@ export function CotizadorApp() {
     };
   }
 
+  function drawPdfFooter(doc: any, pageNumber: number) {
+    doc.setDrawColor(222, 226, 216);
+    doc.line(14, 286, 196, 286);
+    doc.setFontSize(8);
+    doc.setTextColor(105, 97, 86);
+    doc.text(`${BRAND.name} - ${BRAND.address}`, 14, 291);
+    doc.text(`Pagina ${pageNumber}`, 181, 291);
+  }
+
   async function downloadBudgetPdf() {
     const doc = await buildBudgetPdfDoc();
     doc.save(`${BRAND.name}-presupuesto.pdf`);
@@ -373,6 +382,7 @@ export function CotizadorApp() {
   async function buildBudgetPdfDoc() {
     const { jsPDF } = await import("jspdf");
     const doc = new jsPDF();
+    let pageNumber = 1;
     const today = new Date();
     const dateText = `${today.getDate().toString().padStart(2, "0")}/${(today.getMonth() + 1)
       .toString()
@@ -381,95 +391,120 @@ export function CotizadorApp() {
       today.getDate(),
     ).padStart(2, "0")}-${String(today.getHours()).padStart(2, "0")}${String(today.getMinutes()).padStart(2, "0")}`;
 
-    doc.setFillColor(122, 157, 102);
-    doc.rect(0, 0, 210, 34, "F");
+    const left = 14;
+    const right = 196;
+    const width = right - left;
+
+    const ensureSpace = (needed: number, currentY: number) => {
+      if (currentY + needed <= 276) return currentY;
+      drawPdfFooter(doc, pageNumber);
+      doc.addPage();
+      pageNumber += 1;
+      return 18;
+    };
+
+    doc.setFillColor(72, 105, 78);
+    doc.rect(0, 0, 210, 38, "F");
+    doc.setFillColor(243, 185, 90);
+    doc.rect(0, 36, 210, 2, "F");
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.text(BRAND.name, 14, 14);
+    doc.setFontSize(22);
+    doc.text(BRAND.name, left, 15);
     doc.setFontSize(10);
-    doc.text("Presupuesto comercial de cortinas a medida", 14, 21);
-    doc.text(`Fecha: ${dateText}`, 150, 14);
-    doc.text(`Nro presupuesto: ${quoteNumber}`, 130, 21);
+    doc.text("Presupuesto comercial de cortinas a medida", left, 23);
+    doc.text(BRAND.address, left, 30);
     doc.setFontSize(9);
-    doc.text(BRAND.address, 14, 28);
+    doc.text("COTIZACION", 162, 13);
+    doc.text(`Fecha: ${dateText}`, 158, 21);
+    doc.text(`Nro: ${quoteNumber}`, 142, 29);
 
-    doc.setTextColor(21, 23, 10);
-    doc.setDrawColor(211, 221, 205);
-    doc.setFillColor(248, 250, 247);
-    doc.roundedRect(14, 40, 182, 33, 2, 2, "FD");
-    doc.setFontSize(11);
-    doc.text("DATOS DEL CLIENTE", 18, 47);
+    doc.setDrawColor(218, 224, 213);
+    doc.setFillColor(250, 251, 248);
+    doc.roundedRect(left, 48, width, 36, 2, 2, "FD");
+    doc.setTextColor(43, 56, 44);
+    doc.setFontSize(9);
+    doc.text("DATOS DEL CLIENTE", left + 4, 56);
     doc.setFontSize(10);
-    doc.text(`Cliente: ${common.cliente || "-"}`, 18, 54);
-    doc.text(`Telefono: ${common.telefono || "-"}`, 18, 60);
-    doc.text(`Domicilio: ${common.direccion || "-"}`, 18, 66);
-    doc.text(`Cantidad de cortinas: ${finalItems.length}`, 124, 54);
-    doc.text(`Vendedor: ${BRAND.name}`, 124, 60);
+    doc.text(`Cliente: ${common.cliente || "-"}`, left + 4, 64);
+    doc.text(`Telefono: ${common.telefono || "-"}`, left + 4, 71);
+    doc.text(`Domicilio: ${common.direccion || "-"}`, left + 4, 78);
+    doc.text(`Cantidad de cortinas: ${finalItems.length}`, 132, 64);
+    doc.text(`Ambiente principal: ${common.ambiente || "-"}`, 132, 71);
+    doc.text(`Estado: presupuesto estimado`, 132, 78);
 
-    let cursorY = 82;
-    doc.setFontSize(11);
-    doc.setTextColor(49, 64, 40);
-    doc.text("DETALLE POR CORTINA", 14, cursorY);
-    cursorY += 6;
+    let cursorY = 96;
+    doc.setFillColor(72, 105, 78);
+    doc.roundedRect(left, cursorY, width, 9, 1.5, 1.5, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.text("#", left + 3, cursorY + 6);
+    doc.text("Producto", left + 12, cursorY + 6);
+    doc.text("Ambiente / medidas / detalle", left + 52, cursorY + 6);
+    doc.text("Subtotal", 166, cursorY + 6);
+    cursorY += 11;
 
     finalItems.forEach((item, index) => {
       const parsed = parseBudgetItemDetail(item.detail);
-      const technicalLines = doc.splitTextToSize(parsed.technical, 160);
-      const blockHeight = 28 + technicalLines.length * 5;
+      const detailText = [
+        `Ambiente: ${parsed.ambiente}`,
+        `Medidas: ${parsed.medidas}`,
+        `Detalle: ${parsed.technical}`,
+      ].join("  |  ");
+      const detailLines = doc.splitTextToSize(detailText, 105);
+      const productLines = doc.splitTextToSize(`${getSectionLabel(item.section)}\n${parsed.tipo}`, 34);
+      const rowHeight = Math.max(20, 9 + Math.max(detailLines.length, productLines.length) * 5);
+      cursorY = ensureSpace(rowHeight, cursorY);
 
-      if (cursorY + blockHeight > 262) {
-        doc.addPage();
-        cursorY = 18;
-      }
-
-      doc.setDrawColor(224, 231, 220);
-      doc.setFillColor(255, 255, 255);
-      doc.roundedRect(14, cursorY, 182, blockHeight, 2, 2, "FD");
-      doc.setFontSize(10);
-      doc.setTextColor(18, 30, 22);
-      doc.text(`${index + 1}. ${getSectionLabel(item.section)}`, 18, cursorY + 7);
-      doc.text(`Subtotal: ${money(item.total)}`, 140, cursorY + 7);
+      doc.setDrawColor(218, 224, 213);
+      doc.setFillColor(index % 2 === 0 ? 255 : 248, index % 2 === 0 ? 255 : 250, index % 2 === 0 ? 255 : 247);
+      doc.roundedRect(left, cursorY, width, rowHeight, 1.5, 1.5, "FD");
       doc.setFontSize(9);
-      doc.setTextColor(45, 55, 61);
-      doc.text(`Ambiente: ${parsed.ambiente}`, 18, cursorY + 13);
-      doc.text(`Tipo/Tela: ${parsed.tipo}`, 18, cursorY + 18);
-      doc.text(`Medidas: ${parsed.medidas}`, 18, cursorY + 23);
-      doc.text("Detalle tecnico:", 18, cursorY + 28);
-      doc.text(technicalLines, 47, cursorY + 28);
-      cursorY += blockHeight + 5;
+      doc.setTextColor(43, 56, 44);
+      doc.text(String(index + 1), left + 4, cursorY + 8);
+      doc.text(productLines, left + 12, cursorY + 8);
+      doc.setTextColor(73, 78, 68);
+      doc.text(detailLines, left + 52, cursorY + 8);
+      doc.setTextColor(43, 56, 44);
+      doc.text(money(item.total), 166, cursorY + 8);
+      cursorY += rowHeight + 3;
     });
 
-    if (cursorY + 54 > 270) {
-      doc.addPage();
-      cursorY = 18;
-    }
-
-    const yAfterDetail = cursorY + 2;
-    doc.setFillColor(231, 228, 218);
-    doc.roundedRect(14, yAfterDetail, 182, 24, 3, 3, "F");
+    cursorY = ensureSpace(80, cursorY + 2);
+    const yAfterDetail = cursorY + 4;
+    doc.setDrawColor(218, 224, 213);
+    doc.setFillColor(250, 251, 248);
+    doc.roundedRect(left, yAfterDetail, 112, 36, 2, 2, "FD");
     doc.setFontSize(11);
-    doc.setTextColor(76, 52, 36);
-    doc.text("Importe total estimado", 18, yAfterDetail + 9);
+    doc.setTextColor(43, 56, 44);
+    doc.text("Condiciones comerciales", left + 4, yAfterDetail + 8);
+    doc.setFontSize(8.5);
+    doc.setTextColor(73, 78, 68);
+    doc.text("- Validez del presupuesto: 7 dias corridos.", left + 4, yAfterDetail + 16);
+    doc.text("- Plazos sujetos a confirmacion de pedido y disponibilidad.", left + 4, yAfterDetail + 22);
+    doc.text("- Instalacion y visita tecnica segun agenda coordinada.", left + 4, yAfterDetail + 28);
+
+    doc.setFillColor(72, 105, 78);
+    doc.roundedRect(132, yAfterDetail, 64, 36, 2, 2, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(10);
+    doc.text("TOTAL ESTIMADO", 138, yAfterDetail + 11);
     doc.setFontSize(18);
-    doc.text(money(finalTotal), 18, yAfterDetail + 19);
+    doc.text(money(finalTotal), 138, yAfterDetail + 25);
 
     if (common.observaciones) {
-      const obsY = yAfterDetail + 34;
-      doc.setFontSize(11);
-      doc.setTextColor(21, 23, 10);
-      doc.text("Observaciones", 14, obsY);
+      const obsY = ensureSpace(28, yAfterDetail + 44);
+      doc.setDrawColor(218, 224, 213);
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(left, obsY, width, 26, 2, 2, "FD");
       doc.setFontSize(10);
-      doc.text(doc.splitTextToSize(common.observaciones, 178), 14, obsY + 7);
+      doc.setTextColor(43, 56, 44);
+      doc.text("Observaciones", left + 4, obsY + 8);
+      doc.setFontSize(9);
+      doc.setTextColor(73, 78, 68);
+      doc.text(doc.splitTextToSize(common.observaciones, 170), left + 4, obsY + 15);
     }
 
-    const termsY = common.observaciones ? yAfterDetail + 62 : yAfterDetail + 38;
-    doc.setFontSize(10);
-    doc.setTextColor(76, 52, 36);
-    doc.text("Condiciones comerciales:", 14, termsY);
-    doc.text("- Validez del presupuesto: 7 dias corridos.", 14, termsY + 6);
-    doc.text("- Los plazos de entrega se confirman al aprobar la cotizacion.", 14, termsY + 12);
-    doc.text("- Instalacion y visitas tecnicas segun agenda coordinada.", 14, termsY + 18);
-    doc.text(`${BRAND.name} | Gracias por confiar en nosotros`, 14, termsY + 28);
+    drawPdfFooter(doc, pageNumber);
 
     return doc;
   }

@@ -53,6 +53,8 @@ const ROLLER_FABRIC_OPTIONS = [
   "Sunscreen 5% - Negro",
 ] as const;
 
+const ROLLER_PRICE_M2 = 51000;
+
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{children}</label>;
 }
@@ -95,7 +97,7 @@ export function CotizadorApp() {
     comando: "derecho",
     cadena: "plastico",
     incluyeInstalacion: true,
-    precioM2: 45000,
+    precioM2: ROLLER_PRICE_M2,
     extraMotorUnidad: 65000,
     costoInstalacion: 22000,
   });
@@ -234,7 +236,7 @@ export function CotizadorApp() {
       return `Ambiente ${common.ambiente || "-"} | Tipo ${generoFabricName} (${genero.categoriaTela}) | Medidas ${generoCalc.medidasCount}: ${generoRowsSummary} | Pliegue ${genero.pliegue} coef x${generoCalc.coef.toFixed(1)} | Tela estimada ${generoCalc.metrosLineales.toFixed(2)} m | Riel ${generoCalc.metrosRiel.toFixed(2)} m x ${money(genero.costoRielMetroLineal)}`;
     }
     if (section === "roller") {
-      return `Ambiente ${common.ambiente || "-"} | Tipo ${roller.tipoTela} | Medidas ${rollerCalc.medidasCount}: ${rollerRowsSummary} | Total cortinas ${rollerCalc.totalCantidad} | Accionamiento ${roller.accionamiento} | Cano ${roller.sistemaCano} mm | Caida ${roller.caida} | Comando ${roller.comando} | Cadena ${roller.cadena} | Superficie ${rollerCalc.m2.toFixed(2)} m2`;
+      return `Ambiente ${common.ambiente || "-"} | Tipo ${roller.tipoTela} | Medidas ${rollerCalc.medidasCount}: ${rollerRowsSummary} | Total cortinas ${rollerCalc.totalCantidad} | Accionamiento ${roller.accionamiento} | Cano ${roller.sistemaCano} mm | Caida ${roller.caida} | Comando ${roller.comando} | Cadena ${roller.cadena}`;
     }
     return `Ambiente ${common.ambiente || "-"} | Tipo ${bandas.tipoTela} (${bandas.categoria}) | Medidas ${bandasCalc.medidasCount}: ${bandasRowsSummary} | Superficie ${bandasCalc.m2.toFixed(2)} m2`;
   }, [
@@ -256,7 +258,6 @@ export function CotizadorApp() {
     roller.comando,
     roller.cadena,
     rollerCalc.medidasCount,
-    rollerCalc.m2,
     rollerCalc.totalCantidad,
     rollerRowsSummary,
     bandas.tipoTela,
@@ -691,7 +692,6 @@ export function CotizadorApp() {
               <div><FieldLabel>Caida</FieldLabel><Select value={roller.caida} onChange={(e) => setRoller((p) => ({ ...p, caida: e.target.value }))}><option value="atras">Atras</option><option value="invertida">Invertida</option></Select></div>
               <div><FieldLabel>Comando</FieldLabel><Select value={roller.comando} onChange={(e) => setRoller((p) => ({ ...p, comando: e.target.value }))}><option value="derecho">Derecho</option><option value="izquierdo">Izquierdo</option></Select></div>
               <div><FieldLabel>Cadena</FieldLabel><Select value={roller.cadena} onChange={(e) => setRoller((p) => ({ ...p, cadena: e.target.value }))}><option value="plastico">Plastica</option><option value="metalica">Metalica</option></Select></div>
-              <div><FieldLabel>Precio m2 ($)</FieldLabel><Input type="number" value={roller.precioM2} onChange={(e) => setRoller((p) => ({ ...p, precioM2: Number(e.target.value) }))} /></div>
               <div><FieldLabel>Extra motor por unidad ($)</FieldLabel><Input type="number" value={roller.extraMotorUnidad} onChange={(e) => setRoller((p) => ({ ...p, extraMotorUnidad: Number(e.target.value) }))} /></div>
               <div><FieldLabel>Costo instalacion ($)</FieldLabel><Input type="number" value={roller.costoInstalacion} onChange={(e) => setRoller((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} /></div>
               <div className="flex items-end"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={roller.incluyeInstalacion} onChange={(e) => setRoller((p) => ({ ...p, incluyeInstalacion: e.target.checked }))} />Incluye instalacion</label></div>
@@ -736,9 +736,7 @@ export function CotizadorApp() {
               <p>Caño: <strong>{roller.sistemaCano} mm</strong> | Caida: <strong>{roller.caida}</strong></p>
               <p>Comando: <strong>{roller.comando}</strong> | Cadena: <strong>{roller.cadena}</strong></p>
               <p>Medidas cargadas: <strong>{rollerCalc.medidasCount}</strong> | Cortinas totales: <strong>{rollerCalc.totalCantidad}</strong></p>
-              <p>Superficie: <strong>{rollerCalc.m2.toFixed(2)} m2</strong></p>
-              <p>Precio m2 aplicado: <strong>{money(rollerCalc.precioM2Aplicado)}</strong>{rollerCalc.isSunscreen ? " (incluye +10% por Sunscreen)" : ""}</p>
-              <p>Base: <strong>{money(rollerCalc.base)}</strong></p>
+              <p>Subtotal producto: <strong>{money(rollerCalc.base)}</strong>{rollerCalc.isSunscreen ? " (incluye ajuste por Sunscreen)" : ""}</p>
               <p>Extra motor: <strong>{money(rollerCalc.extraMotor)}</strong></p>
               <p>Instalacion: <strong>{money(roller.costoInstalacion)} x {rollerCalc.totalCantidad} = {money(rollerCalc.inst)}</strong></p>
               <div className="mt-3 rounded-xl border border-slate-900 bg-slate-900 px-3 py-3 text-white">

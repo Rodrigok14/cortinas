@@ -1,6 +1,6 @@
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
-export async function getClosedBudgets(search?: string) {
+export async function getFollowUpBudgets(search?: string) {
   const supabase = getSupabaseServerClient();
   let query = supabase
     .from("quotations")
@@ -19,7 +19,7 @@ export async function getClosedBudgets(search?: string) {
       clients(nombre_completo, telefono, email, direccion),
       projects(nombre_obra, direccion_instalacion, estado)
     `)
-    .eq("estado", "aprobada")
+    .in("estado", ["borrador", "enviada", "aprobada"])
     .order("fecha", { ascending: false });
 
   if (search) {

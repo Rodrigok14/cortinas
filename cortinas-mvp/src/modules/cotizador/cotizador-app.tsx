@@ -939,6 +939,13 @@ export function CotizadorApp() {
           <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600">
             Total del presupuesto: <strong>{money(finalTotal)}</strong>
           </div>
+          <div className="min-w-[220px]">
+            <FieldLabel>Guardar como</FieldLabel>
+            <Select name="estado" defaultValue="enviada">
+              <option value="enviada">Pendiente de seguimiento</option>
+              <option value="aprobada">Cerrado / aprobado</option>
+            </Select>
+          </div>
           <SubmitButton>Guardar presupuesto en Cotizaciones</SubmitButton>
           <button
             type="button"

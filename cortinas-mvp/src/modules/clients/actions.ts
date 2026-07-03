@@ -23,7 +23,7 @@ export async function createClientAction(formData: FormData): Promise<void> {
   const { error } = await supabase.from("clients").insert(parsed);
   if (error) throw new Error(error.message);
 
-  revalidate(["/clientes", "/dashboard"]);
+  revalidate(["/clientes", "/pedidos", "/dashboard"]);
 }
 
 export async function updateClientAction(formData: FormData): Promise<void> {

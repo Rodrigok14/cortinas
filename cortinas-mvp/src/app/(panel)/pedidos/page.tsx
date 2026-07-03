@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { requireModuleAccess } from "@/lib/auth";
 import { getClientOptions } from "@/lib/options";
 import { formatDate, money } from "@/lib/utils";
+import { createClientAction } from "@/modules/clients/actions";
 import { createOrderAction, deleteOrderAction, updateOrderAction } from "@/modules/orders/actions";
 import { getOrders } from "@/modules/orders/queries";
 
@@ -26,7 +27,32 @@ export default async function OrdersPage({ searchParams }: Props) {
     <section className="space-y-4">
       <ModuleHeader title="Pedidos" description="Visualizador de pedidos: realizados, pendientes, entregados y mas" />
 
+      <Card className="border-emerald-200 bg-emerald-50/80">
+        <div className="mb-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">Cliente nuevo</p>
+          <h2 className="text-lg font-semibold text-emerald-950">Crear cliente desde pedidos</h2>
+          <p className="text-sm text-emerald-800">
+            Cargalo aca y despues lo vas a poder elegir en el selector de cliente del pedido.
+          </p>
+        </div>
+        <form action={createClientAction} className="grid gap-2 md:grid-cols-4">
+          <Input name="nombre_completo" placeholder="Nombre completo" required />
+          <Input name="telefono" placeholder="Telefono" required />
+          <Input name="email" type="email" placeholder="Email opcional" />
+          <Input name="ciudad" placeholder="Ciudad" />
+          <Input className="md:col-span-2" name="direccion" placeholder="Direccion" />
+          <Textarea className="md:col-span-2" name="observaciones" rows={2} placeholder="Observaciones del cliente" />
+          <div className="md:col-span-4">
+            <SubmitButton>Crear cliente</SubmitButton>
+          </div>
+        </form>
+      </Card>
+
       <Card>
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold text-slate-900">Crear pedido</h2>
+          <p className="text-sm text-slate-500">Selecciona un cliente existente y carga los datos comerciales del pedido.</p>
+        </div>
         <form action={createOrderAction} className="grid gap-2 md:grid-cols-4">
           <Select name="client_id" required>
             <option value="">Cliente</option>

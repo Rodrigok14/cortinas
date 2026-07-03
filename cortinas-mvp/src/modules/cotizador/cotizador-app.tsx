@@ -59,6 +59,20 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500">{children}</label>;
 }
 
+function NumberInput({ onFocus, ...props }: Omit<React.ComponentProps<typeof Input>, "type">) {
+  return (
+    <Input
+      {...props}
+      type="number"
+      inputMode="decimal"
+      onFocus={(event) => {
+        onFocus?.(event);
+        event.currentTarget.select();
+      }}
+    />
+  );
+}
+
 export function CotizadorApp() {
   const [section, setSection] = useState<QuoteSection>("genero");
 
@@ -586,15 +600,15 @@ export function CotizadorApp() {
             <div className="grid gap-2 md:grid-cols-3">
               <div>
                 <FieldLabel>Ancho ventana (m)</FieldLabel>
-                <Input type="number" step="0.01" value={genero.anchoVentana} onChange={(e) => setGenero((p) => ({ ...p, anchoVentana: Number(e.target.value) }))} />
+                <NumberInput step="0.01" value={genero.anchoVentana} onChange={(e) => setGenero((p) => ({ ...p, anchoVentana: Number(e.target.value) }))} />
               </div>
               <div>
                 <FieldLabel>Alto ventana (m)</FieldLabel>
-                <Input type="number" step="0.01" value={genero.altoVentana} onChange={(e) => setGenero((p) => ({ ...p, altoVentana: Number(e.target.value) }))} />
+                <NumberInput step="0.01" value={genero.altoVentana} onChange={(e) => setGenero((p) => ({ ...p, altoVentana: Number(e.target.value) }))} />
               </div>
               <div>
                 <FieldLabel>Cantidad de panos</FieldLabel>
-                <Input type="number" value={genero.cantidadPanos} onChange={(e) => setGenero((p) => ({ ...p, cantidadPanos: Number(e.target.value) }))} />
+                <NumberInput value={genero.cantidadPanos} onChange={(e) => setGenero((p) => ({ ...p, cantidadPanos: Number(e.target.value) }))} />
               </div>
               <div>
                 <FieldLabel>Tipo de tela</FieldLabel>
@@ -629,15 +643,15 @@ export function CotizadorApp() {
               </div>
               <div>
                 <FieldLabel>Ancho fijo tela (m)</FieldLabel>
-                <Input type="number" step="0.01" value={genero.anchoTelaFijo} onChange={(e) => setGenero((p) => ({ ...p, anchoTelaFijo: Number(e.target.value) }))} />
+                <NumberInput step="0.01" value={genero.anchoTelaFijo} onChange={(e) => setGenero((p) => ({ ...p, anchoTelaFijo: Number(e.target.value) }))} />
               </div>
               <div>
                 <FieldLabel>Costo metro tela ($)</FieldLabel>
-                <Input type="number" value={genero.costoMetroTela} onChange={(e) => setGenero((p) => ({ ...p, costoMetroTela: Number(e.target.value) }))} />
+                <NumberInput value={genero.costoMetroTela} onChange={(e) => setGenero((p) => ({ ...p, costoMetroTela: Number(e.target.value) }))} />
               </div>
               <div>
                 <FieldLabel>Costo riel por metro lineal ($)</FieldLabel>
-                <Input type="number" value={genero.costoRielMetroLineal} onChange={(e) => setGenero((p) => ({ ...p, costoRielMetroLineal: Number(e.target.value) }))} />
+                <NumberInput value={genero.costoRielMetroLineal} onChange={(e) => setGenero((p) => ({ ...p, costoRielMetroLineal: Number(e.target.value) }))} />
               </div>
               <div className="md:col-span-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3">
                 <div className="mb-2 flex items-center justify-between">
@@ -656,10 +670,10 @@ export function CotizadorApp() {
                   ) : (
                     generoRows.map((row, index) => (
                       <div key={`genero-row-${index}`} className="grid gap-2 rounded-lg border border-emerald-200 bg-white p-2 md:grid-cols-5">
-                        <Input type="number" step="0.01" value={row.ancho} onChange={(e) => updateRow(setGeneroRows, index, "ancho", Number(e.target.value))} placeholder="Ancho (m)" />
-                        <Input type="number" step="0.01" value={row.alto} onChange={(e) => updateRow(setGeneroRows, index, "alto", Number(e.target.value))} placeholder="Alto (m)" />
-                        <Input type="number" value={row.cantidad} onChange={(e) => updateRow(setGeneroRows, index, "cantidad", Number(e.target.value))} placeholder="Cantidad" />
-                        <Input type="number" value={row.panos ?? 2} onChange={(e) => updateRow(setGeneroRows, index, "panos", Number(e.target.value))} placeholder="Panos" />
+                        <NumberInput step="0.01" value={row.ancho} onChange={(e) => updateRow(setGeneroRows, index, "ancho", Number(e.target.value))} placeholder="Ancho (m)" />
+                        <NumberInput step="0.01" value={row.alto} onChange={(e) => updateRow(setGeneroRows, index, "alto", Number(e.target.value))} placeholder="Alto (m)" />
+                        <NumberInput value={row.cantidad} onChange={(e) => updateRow(setGeneroRows, index, "cantidad", Number(e.target.value))} placeholder="Cantidad" />
+                        <NumberInput value={row.panos ?? 2} onChange={(e) => updateRow(setGeneroRows, index, "panos", Number(e.target.value))} placeholder="Panos" />
                         <button
                           type="button"
                           className="rounded-lg bg-rose-600 px-2 py-1 text-xs font-semibold text-white hover:bg-rose-700"
@@ -683,7 +697,7 @@ export function CotizadorApp() {
                 </label>
                 <div className="w-full md:w-56">
                   <FieldLabel>Costo instalacion ($)</FieldLabel>
-                  <Input type="number" value={genero.costoInstalacion} onChange={(e) => setGenero((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} />
+                  <NumberInput value={genero.costoInstalacion} onChange={(e) => setGenero((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} />
                 </div>
               </div>
               <div className="md:col-span-3">
@@ -718,17 +732,17 @@ export function CotizadorApp() {
           <Card>
             <h3 className="mb-3 text-sm font-semibold text-slate-700">Parametros - Cortinas roller</h3>
             <div className="grid gap-2 md:grid-cols-3">
-              <div><FieldLabel>Ancho (m)</FieldLabel><Input type="number" step="0.01" value={roller.ancho} onChange={(e) => setRoller((p) => ({ ...p, ancho: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Alto (m)</FieldLabel><Input type="number" step="0.01" value={roller.alto} onChange={(e) => setRoller((p) => ({ ...p, alto: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Cantidad</FieldLabel><Input type="number" value={roller.cantidad} onChange={(e) => setRoller((p) => ({ ...p, cantidad: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Ancho (m)</FieldLabel><NumberInput step="0.01" value={roller.ancho} onChange={(e) => setRoller((p) => ({ ...p, ancho: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Alto (m)</FieldLabel><NumberInput step="0.01" value={roller.alto} onChange={(e) => setRoller((p) => ({ ...p, alto: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Cantidad</FieldLabel><NumberInput value={roller.cantidad} onChange={(e) => setRoller((p) => ({ ...p, cantidad: Number(e.target.value) }))} /></div>
               <div><FieldLabel>Tipo de tela</FieldLabel><Select value={roller.tipoTela} onChange={(e) => setRoller((p) => ({ ...p, tipoTela: e.target.value }))}>{ROLLER_FABRIC_OPTIONS.map((f) => <option key={f} value={f}>{f}</option>)}</Select></div>
               <div><FieldLabel>Accionamiento</FieldLabel><Select value={roller.accionamiento} onChange={(e) => setRoller((p) => ({ ...p, accionamiento: e.target.value }))}><option value="cadena">Cadena</option><option value="motor">Motor</option></Select></div>
               <div><FieldLabel>Sistema de caño (mm)</FieldLabel><Select value={roller.sistemaCano} onChange={(e) => setRoller((p) => ({ ...p, sistemaCano: e.target.value }))}><option value="32">32</option><option value="38">38</option><option value="45">45</option></Select></div>
               <div><FieldLabel>Caida</FieldLabel><Select value={roller.caida} onChange={(e) => setRoller((p) => ({ ...p, caida: e.target.value }))}><option value="atras">Atras</option><option value="invertida">Invertida</option></Select></div>
               <div><FieldLabel>Comando</FieldLabel><Select value={roller.comando} onChange={(e) => setRoller((p) => ({ ...p, comando: e.target.value }))}><option value="derecho">Derecho</option><option value="izquierdo">Izquierdo</option></Select></div>
               <div><FieldLabel>Cadena</FieldLabel><Select value={roller.cadena} onChange={(e) => setRoller((p) => ({ ...p, cadena: e.target.value }))}><option value="plastico">Plastica</option><option value="metalica">Metalica</option></Select></div>
-              <div><FieldLabel>Extra motor por unidad ($)</FieldLabel><Input type="number" value={roller.extraMotorUnidad} onChange={(e) => setRoller((p) => ({ ...p, extraMotorUnidad: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Costo instalacion ($)</FieldLabel><Input type="number" value={roller.costoInstalacion} onChange={(e) => setRoller((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Extra motor por unidad ($)</FieldLabel><NumberInput value={roller.extraMotorUnidad} onChange={(e) => setRoller((p) => ({ ...p, extraMotorUnidad: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Costo instalacion ($)</FieldLabel><NumberInput value={roller.costoInstalacion} onChange={(e) => setRoller((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} /></div>
               <div className="flex items-end"><label className="inline-flex items-center gap-2"><input type="checkbox" checked={roller.incluyeInstalacion} onChange={(e) => setRoller((p) => ({ ...p, incluyeInstalacion: e.target.checked }))} />Incluye instalacion</label></div>
               <div className="md:col-span-3 rounded-xl border border-cyan-200 bg-cyan-50 p-3">
                 <div className="mb-2 flex items-center justify-between">
@@ -747,9 +761,9 @@ export function CotizadorApp() {
                   ) : (
                     rollerRows.map((row, index) => (
                       <div key={`roller-row-${index}`} className="grid gap-2 rounded-lg border border-cyan-200 bg-white p-2 md:grid-cols-4">
-                        <Input type="number" step="0.01" value={row.ancho} onChange={(e) => updateRow(setRollerRows, index, "ancho", Number(e.target.value))} placeholder="Ancho (m)" />
-                        <Input type="number" step="0.01" value={row.alto} onChange={(e) => updateRow(setRollerRows, index, "alto", Number(e.target.value))} placeholder="Alto (m)" />
-                        <Input type="number" value={row.cantidad} onChange={(e) => updateRow(setRollerRows, index, "cantidad", Number(e.target.value))} placeholder="Cantidad" />
+                        <NumberInput step="0.01" value={row.ancho} onChange={(e) => updateRow(setRollerRows, index, "ancho", Number(e.target.value))} placeholder="Ancho (m)" />
+                        <NumberInput step="0.01" value={row.alto} onChange={(e) => updateRow(setRollerRows, index, "alto", Number(e.target.value))} placeholder="Alto (m)" />
+                        <NumberInput value={row.cantidad} onChange={(e) => updateRow(setRollerRows, index, "cantidad", Number(e.target.value))} placeholder="Cantidad" />
                         <button
                           type="button"
                           className="rounded-lg bg-rose-600 px-2 py-1 text-xs font-semibold text-white hover:bg-rose-700"
@@ -788,14 +802,14 @@ export function CotizadorApp() {
           <Card>
             <h3 className="mb-3 text-sm font-semibold text-slate-700">Parametros - Bandas verticales</h3>
             <div className="grid gap-2 md:grid-cols-3">
-              <div><FieldLabel>Ancho (m)</FieldLabel><Input type="number" step="0.01" value={bandas.ancho} onChange={(e) => setBandas((p) => ({ ...p, ancho: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Alto (m)</FieldLabel><Input type="number" step="0.01" value={bandas.alto} onChange={(e) => setBandas((p) => ({ ...p, alto: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Cantidad</FieldLabel><Input type="number" value={bandas.cantidad} onChange={(e) => setBandas((p) => ({ ...p, cantidad: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Ancho (m)</FieldLabel><NumberInput step="0.01" value={bandas.ancho} onChange={(e) => setBandas((p) => ({ ...p, ancho: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Alto (m)</FieldLabel><NumberInput step="0.01" value={bandas.alto} onChange={(e) => setBandas((p) => ({ ...p, alto: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Cantidad</FieldLabel><NumberInput value={bandas.cantidad} onChange={(e) => setBandas((p) => ({ ...p, cantidad: Number(e.target.value) }))} /></div>
               <div><FieldLabel>Tipo de tela</FieldLabel><Input value={bandas.tipoTela} onChange={(e) => setBandas((p) => ({ ...p, tipoTela: e.target.value }))} /></div>
               <div><FieldLabel>Categoria</FieldLabel><Select value={bandas.categoria} onChange={(e) => setBandas((p) => ({ ...p, categoria: e.target.value }))}><option value="standard">Standard</option><option value="premium">Premium</option></Select></div>
-              <div><FieldLabel>Precio m2 ($)</FieldLabel><Input type="number" value={bandas.precioM2} onChange={(e) => setBandas((p) => ({ ...p, precioM2: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Costo riel ($)</FieldLabel><Input type="number" value={bandas.costoRiel} onChange={(e) => setBandas((p) => ({ ...p, costoRiel: Number(e.target.value) }))} /></div>
-              <div><FieldLabel>Costo instalacion ($)</FieldLabel><Input type="number" value={bandas.costoInstalacion} onChange={(e) => setBandas((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Precio m2 ($)</FieldLabel><NumberInput value={bandas.precioM2} onChange={(e) => setBandas((p) => ({ ...p, precioM2: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Costo riel ($)</FieldLabel><NumberInput value={bandas.costoRiel} onChange={(e) => setBandas((p) => ({ ...p, costoRiel: Number(e.target.value) }))} /></div>
+              <div><FieldLabel>Costo instalacion ($)</FieldLabel><NumberInput value={bandas.costoInstalacion} onChange={(e) => setBandas((p) => ({ ...p, costoInstalacion: Number(e.target.value) }))} /></div>
               <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm md:col-span-3 md:flex md:items-center md:gap-6 md:space-y-0">
                 <label className="inline-flex items-center gap-2"><input type="checkbox" checked={bandas.incluyeRiel} onChange={(e) => setBandas((p) => ({ ...p, incluyeRiel: e.target.checked }))} />Incluye riel</label>
                 <label className="inline-flex items-center gap-2"><input type="checkbox" checked={bandas.incluyeInstalacion} onChange={(e) => setBandas((p) => ({ ...p, incluyeInstalacion: e.target.checked }))} />Incluye instalacion</label>
@@ -817,9 +831,9 @@ export function CotizadorApp() {
                   ) : (
                     bandasRows.map((row, index) => (
                       <div key={`bandas-row-${index}`} className="grid gap-2 rounded-lg border border-indigo-200 bg-white p-2 md:grid-cols-4">
-                        <Input type="number" step="0.01" value={row.ancho} onChange={(e) => updateRow(setBandasRows, index, "ancho", Number(e.target.value))} placeholder="Ancho (m)" />
-                        <Input type="number" step="0.01" value={row.alto} onChange={(e) => updateRow(setBandasRows, index, "alto", Number(e.target.value))} placeholder="Alto (m)" />
-                        <Input type="number" value={row.cantidad} onChange={(e) => updateRow(setBandasRows, index, "cantidad", Number(e.target.value))} placeholder="Cantidad" />
+                        <NumberInput step="0.01" value={row.ancho} onChange={(e) => updateRow(setBandasRows, index, "ancho", Number(e.target.value))} placeholder="Ancho (m)" />
+                        <NumberInput step="0.01" value={row.alto} onChange={(e) => updateRow(setBandasRows, index, "alto", Number(e.target.value))} placeholder="Alto (m)" />
+                        <NumberInput value={row.cantidad} onChange={(e) => updateRow(setBandasRows, index, "cantidad", Number(e.target.value))} placeholder="Cantidad" />
                         <button
                           type="button"
                           className="rounded-lg bg-rose-600 px-2 py-1 text-xs font-semibold text-white hover:bg-rose-700"
